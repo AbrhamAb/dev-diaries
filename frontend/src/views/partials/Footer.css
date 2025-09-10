@@ -1,0 +1,120 @@
+.modern-footer {
+  background: #23272f;
+  color: #d1d5db;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 1rem;
+  box-shadow: 0 -2px 16px rgba(40, 41, 49, 0.10);
+}
+
+.footer-logo {
+  height: 56px;
+  width: auto;
+  border-radius: 8px;
+  background: #232946;
+  box-shadow: 0 2px 8px rgba(40,41,49,0.08);
+}
+
+.footer-social a {
+  color: #6366f1;
+  font-size: 1.4rem;
+  margin-right: 16px;
+  transition: color 0.2s;
+}
+.footer-social a:last-child {
+  margin-right: 0;
+}
+.footer-social a:hover {
+  color: #fff;
+}
+
+.footer-links a {
+  color: #d1d5db;
+  text-decoration: none;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+.footer-links a:hover {
+  color: #6366f1;
+  text-decoration: underline;
+}
+
+.footer-info i {
+  color: #6366f1;
+  margin-right: 8px;
+}
+
+.footer-newsletter .form-control {
+  border-radius: 18px;
+  border: 1.5px solid #6366f1;
+  background: #232946;
+  color: #f3f4f6;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.footer-newsletter .form-control:focus {
+  border-color: #6366f1;
+  background: #232946;
+  color: #fff;
+}
+.footer-newsletter .btn {
+  border-radius: 18px;
+  font-weight: 500;
+  padding: 8px 0;
+  font-size: 1rem;
+}
+
+.footer-divider {
+  border-color: #374151;
+  opacity: 0.5;
+}
+
+.text-gray {
+  color: #a1a1aa !important;
+}
+
+/* Responsive Styles */
+@media (max-width: 991px) {
+  .footer-logo {
+    height: 40px;
+  }
+  .modern-footer .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .footer-newsletter .btn,
+  .footer-newsletter .form-control {
+    font-size: 1rem;
+    padding: 10px 16px;
+  }
+  .footer-social a {
+    font-size: 1.2rem;
+    margin-right: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .modern-footer .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .footer-logo {
+    height: 32px;
+  }
+  .footer-newsletter .btn,
+  .footer-newsletter .form-control {
+    font-size: 0.95rem;
+    padding: 8px 12px;
+  }
+  .footer-social a {
+    font-size: 1.1rem;
+    margin-right: 8px;
+  }
+  .footer-links,
+  .footer-info {
+    font-size: 0.95rem;
+  }
+  .row.align-items-center.gy-4 > [class^="col-"] {
+    margin-bottom: 2rem;
+  }
+}
