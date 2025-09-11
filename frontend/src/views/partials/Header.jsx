@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/auth";
 import { useCategories } from "../../hooks/useCategories";
 import "./Header.css";
@@ -7,8 +7,10 @@ import "./Header.css";
 function Header() {
     const [isLoggedIn, user] = useAuthStore((state) => [state.isLoggedIn, state.user]);
     const [openDropdown, setOpenDropdown] = useState(null);
+    const [search, setSearch] = useState("");
     const navRef = useRef(null);
     const categories = useCategories();
+    const navigate = useNavigate();
     console.log("Categories from hook:", categories);
 
     // Close dropdowns when clicking/touching outside
@@ -30,6 +32,14 @@ function Header() {
     const handleDropdownToggle = (name) => (e) => {
         e.preventDefault();
         setOpenDropdown(openDropdown === name ? null : name);
+    };
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (search.trim()) {
+            navigate(`/search/${encodeURIComponent(search.trim())}`);
+            setSearch("");
+        }
     };
 
     return (
@@ -57,20 +67,21 @@ function Header() {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarCollapse">
                         <div className="mx-auto nav-searchbar">
-                            <form className="rounded-pill position-relative">
+                            <form className="rounded-pill position-relative" onSubmit={handleSearchSubmit}>
                                 <input
                                     className="form-control pe-5 rounded-pill"
                                     type="search"
                                     placeholder="Search Articles"
                                     aria-label="Search"
+                                    value={search}
+                                    onChange={e => setSearch(e.target.value)}
                                 />
-                                <Link
-                                    to={"/search/"}
+                                <button
                                     className="btn bg-transparent border-0 px-2 py-0 position-absolute top-50 end-0 translate-middle-y"
                                     type="submit"
                                 >
                                     <i className="bi bi-search fs-5"></i>
-                                </Link>
+                                </button>
                             </form>
                         </div>
                         <ul className="navbar-nav ms-auto align-items-lg-center gap-lg-3 gap-2">

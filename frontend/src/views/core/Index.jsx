@@ -6,34 +6,20 @@ import moment from "moment";
 import apiInstance from "../../utils/axios";
 import useUserData from "../../plugin/useUserData";
 import Toast from "../../plugin/Toast";
+import "../../App.css";
 
 function Index() {
     const [posts, setPosts] = useState([]);
     const [popularPosts, setPopularPosts] = useState([]);
     const [category, setCategory] = useState([]);
 
-    const fetchPosts = async () => {
-        const response = await apiInstance.get(`post/lists/`);
-        setPosts(response.data);
-    };
-
-    const fetchPopularPost = () => {
-        const sortedPopularPost = posts?.sort((a, b) => b.view - a.view);
-        setPopularPosts(sortedPopularPost);
-    };
-
-    const fetchCategory = async () => {
-        const response = await apiInstance.get(`post/category/list/`);
-        setCategory(response.data);
-    };
-
     useEffect(() => {
-        fetchPosts();
-        fetchCategory();
+        apiInstance.get("post/lists/").then(res => setPosts(res.data));
+        apiInstance.get("post/category/list/").then(res => setCategory(res.data));
     }, []);
 
     useEffect(() => {
-        fetchPopularPost();
+        setPopularPosts([...posts].sort((a, b) => b.view - a.view));
     }, [posts]);
 
     // Pagination
@@ -43,208 +29,153 @@ function Index() {
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const postItems = posts.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(posts.length / itemsPerPage);
-    const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
 
+    // Like & Bookmark handlers
     const handleLikePost = async (postId) => {
-        const jsonData = {
-            user_id: useUserData()?.user_id,
-            post_id: postId,
-        };
-        const response = await apiInstance.post(`post/like-post/`, jsonData);
-        fetchPosts();
+        const jsonData = { user_id: useUserData()?.user_id, post_id: postId };
+        const response = await apiInstance.post("post/like-post/", jsonData);
         Toast("success", response.data.message, "");
+        apiInstance.get("post/lists/").then(res => setPosts(res.data));
     };
-
     const handleBookmarkPost = async (postId) => {
-        const jsonData = {
-            user_id: useUserData()?.user_id,
-            post_id: postId,
-        };
-        const response = await apiInstance.post(`post/bookmark-post/`, jsonData);
-        fetchPosts();
+        const jsonData = { user_id: useUserData()?.user_id, post_id: postId };
+        const response = await apiInstance.post("post/bookmark-post/", jsonData);
         Toast("success", response.data.message, "");
+        apiInstance.get("post/lists/").then(res => setPosts(res.data));
     };
 
     return (
         <div>
             <Header />
-            <section className="p-0">
-                <div className="container">
-                    <div className="row">
-                        <div className="col">
-                            <a href="#" className="d-block card-img-flash mb-3">
-                                <img src="assets/images/adv-3.png" alt="" className="img-fluid rounded" />
-                            </a>
-                            <h2 className="text-start d-block mt-1">Trending Articles 🔥</h2>
-                        </div>
-                    </div>
+            {/* Hero Section */}
+            <section className="bg-gradient py-5 mb-4">
+                <div className="container text-center">
+                    <h1 className="fw-bold display-4 mb-3">Welcome to BlogMaster</h1>
+                    <p className="lead mb-4">Discover trending articles, explore categories, and join our community!</p>
+                    <img src="assets/images/adv-3.png" alt="Banner" className="img-fluid rounded-4 shadow" style={{maxHeight: "220px"}} />
                 </div>
             </section>
 
-            <section className="pt-4 pb-0">
-                <div className="container">
-                    <div className="row g-4">
-                        {postItems?.map((p, index) => (
-                            <div className="col-12 col-sm-6 col-lg-3" key={index}>
-                                <div className="card h-100 shadow-sm">
-                                    <div className="card-fold position-relative">
-                                        <img className="card-img-top" style={{ width: "100%", height: "160px", objectFit: "cover" }} src={p.image} alt={p.title} />
-                                    </div>
-                                    <div className="card-body px-3 pt-3">
-                                        <h4 className="card-title">
-                                            <Link to={`${p.slug}`} className="btn-link text-reset stretched-link fw-bold text-decoration-none">
-                                                {p.title?.slice(0, 32) + "..."}
-                                            </Link>
-                                        </h4>
-                                        <div className="d-flex align-items-center gap-2 mb-2">
-                                            <button type="button" onClick={() => handleBookmarkPost(p.id)} style={{ border: "none", background: "none" }}>
-                                                <i className="fas fa-bookmark text-danger"></i>
-                                            </button>
-                                            <button onClick={() => handleLikePost(p.id)} style={{ border: "none", background: "none" }}>
-                                                <i className="fas fa-thumbs-up text-primary"></i>
-                                            </button>
-                                            <span>{p.likes?.length}</span>
-                                        </div>
-                                        <ul className="mt-3 list-unstyled">
-                                            <li>
-                                                <span className="text-dark">
-                                                    <i className="fas fa-user"></i> {p.profile?.full_name}
-                                                </span>
-                                            </li>
-                                            <li className="mt-2">
-                                                <i className="fas fa-calendar"></i> {moment(p.date).format("DD MMM, YYYY")}
-                                            </li>
-                                            <li className="mt-2">
-                                                <i className="fas fa-eye"></i> {p.view} Views
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <nav className="d-flex flex-wrap justify-content-center mt-5">
-                        <ul className="pagination mb-0">
-                            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                                <button className="page-link me-1" onClick={() => setCurrentPage(currentPage - 1)}>
-                                    <i className="ci-arrow-left me-2" />
-                                    Previous
-                                </button>
-                            </li>
-                            {pageNumbers.map((number) => (
-                                <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
-                                    <button className="page-link" onClick={() => setCurrentPage(number)}>
-                                        {number}
-                                    </button>
-                                </li>
-                            ))}
-                            <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                                <button className="page-link ms-1" onClick={() => setCurrentPage(currentPage + 1)}>
-                                    Next
-                                    <i className="ci-arrow-right ms-3" />
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </section>
-
-            <section className="bg-light pt-5 pb-5 mb-3 mt-3">
-                <div className="container">
-                    <div className="row g-4">
-                        <div className="col-12">
-                            <div className="mb-4">
-                                <h2>Categories</h2>
-                            </div>
-                            <div className="d-flex flex-wrap gap-3 justify-content-between">
-                                {category?.map((c, index) => (
-                                    <div className="mt-2" key={index}>
-                                        <Link to={`/category/${c.slug}/`}>
-                                            <div className="card bg-transparent">
-                                                <img className="card-img" src={c.image} style={{ width: "150px", height: "80px", objectFit: "cover" }} alt="card image" />
-                                                <div className="d-flex flex-column align-items-center mt-3 pb-2">
-                                                    <h5 className="mb-0">{c.title}</h5>
-                                                    <small>{c.post_count} Articles</small>
-                                                </div>
-                                            </div>
+            {/* Trending Articles */}
+            <section className="container-fluid mb-5">
+                <h2 className="mb-4 fw-bold" style={{fontSize: "2rem"}}>🔥 Trending Articles</h2>
+                <div className="row g-4 justify-content-center">
+                    {postItems.map((p, idx) => (
+                        <div className="col-12 col-md-6 col-lg-4 d-flex" key={idx}>
+                            <div className="card h-100 shadow-lg border-0 rounded-4 w-100 d-flex flex-column">
+                                <img src={p.image} className="card-img-top rounded-top-4" alt={p.title} style={{height: "280px", objectFit: "cover"}} />
+                                <div className="card-body d-flex flex-column px-3 pt-3">
+                                    <h5 className="card-title fw-bold mb-2" style={{fontSize: "1.15rem"}}>
+                                        <Link to={`/${p.slug}`} className="btn-link text-reset stretched-link fw-bold text-decoration-none">
+                                            {p.title?.slice(0, 32) + "..."}
                                         </Link>
+                                    </h5>
+                                    <div className="d-flex align-items-center mb-2 gap-2">
+                                        <button type="button" onClick={() => handleBookmarkPost(p.id)} className="btn btn-sm btn-light rounded-circle">
+                                            <i className="fas fa-bookmark text-danger"></i>
+                                        </button>
+                                        <button onClick={() => handleLikePost(p.id)} className="btn btn-sm btn-light rounded-circle">
+                                            <i className="fas fa-thumbs-up text-primary"></i>
+                                        </button>
+                                        <span>{p.likes?.length}</span>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section className="p-0">
-                <div className="container">
-                    <div className="row">
-                        <div className="col">
-                            <a href="#" className="d-block card-img-flash mb-3">
-                                <img src="assets/images/adv-3.png" alt="" className="img-fluid rounded" />
-                            </a>
-                            <h2 className="text-start d-block mt-1">Popular Articles 🕒</h2>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section className="pt-4 pb-0">
-                <div className="container">
-                    <div className="row g-4">
-                        {popularPosts?.map((p, index) => (
-                            <div className="col-12 col-sm-6 col-lg-3" key={index}>
-                                <div className="card h-100 shadow-sm">
-                                    <div className="card-fold position-relative">
-                                        <img className="card-img-top" style={{ width: "100%", height: "160px", objectFit: "cover" }} src={p.image} alt={p.title} />
+                                    <div className="d-flex align-items-center gap-2 mb-2">
+                                        <span><i className="fas fa-user"></i></span>
+                                        <span>{p.profile?.full_name}</span>
                                     </div>
-                                    <div className="card-body px-3 pt-3">
-                                        <h4 className="card-title">
-                                            <Link to={`${p.slug}`} className="btn-link text-reset stretched-link fw-bold text-decoration-none">
-                                                {p.title?.slice(0, 32) + "..."}
-                                            </Link>
-                                        </h4>
-                                        <ul className="mt-3 list-unstyled">
-                                            <li>
-                                                <span className="text-dark">
-                                                    <i className="fas fa-user"></i> {p.profile?.full_name}
-                                                </span>
-                                            </li>
-                                            <li className="mt-2">
-                                                <i className="fas fa-calendar"></i> {moment(p.date).format("DD MMM, YYYY")}
-                                            </li>
-                                            <li className="mt-2">
-                                                <i className="fas fa-eye"></i> {p.view} Views
-                                            </li>
-                                        </ul>
+                                    <div className="d-flex align-items-center gap-2 mb-2">
+                                        <span><i className="fas fa-calendar"></i></span>
+                                        <span>{moment(p.date).format("DD MMM, YYYY")}</span>
                                     </div>
+                                    <div className="d-flex align-items-center gap-2 mb-3">
+                                        <span><i className="fas fa-eye"></i></span>
+                                        <span>{p.view} Views</span>
+                                    </div>
+                                    <Link to={`/${p.slug}`} className="btn btn-gradient mt-auto rounded-pill fw-bold">Read More</Link>
                                 </div>
                             </div>
+                        </div>
+                    ))}
+                </div>
+                {/* Pagination */}
+                <nav className="d-flex justify-content-center mt-5">
+                    <ul className="pagination mb-0">
+                        <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                                <i className="fas fa-arrow-left me-2" />
+                                Previous
+                            </button>
+                        </li>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+                            <li key={number} className={`page-item ${currentPage === number ? "active" : ""}`}>
+                                <button className="page-link" onClick={() => setCurrentPage(number)}>
+                                    {number}
+                                </button>
+                            </li>
                         ))}
-                    </div>
-                    {/* Example static pagination for popular posts */}
-                    <nav className="d-flex flex-wrap justify-content-center mt-2">
-                        <ul className="pagination mb-0">
-                            <li className="page-item disabled">
-                                <button className="page-link text-dark fw-bold me-1 rounded">
-                                    <i className="fas fa-arrow-left me-2" />
-                                    Previous
-                                </button>
-                            </li>
-                            <li className="page-item active">
-                                <button className="page-link text-dark fw-bold rounded">1</button>
-                            </li>
-                            <li className="page-item ms-1">
-                                <button className="page-link text-dark fw-bold rounded">2</button>
-                            </li>
-                            <li className="page-item">
-                                <button className="page-link text-dark fw-bold ms-1 rounded">
-                                    Next
-                                    <i className="fas fa-arrow-right ms-3 " />
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
+                        <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                            <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                                Next
+                                <i className="fas fa-arrow-right ms-2" />
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
+
+            {/* Categories */}
+            <section className="container-fluid mb-5">
+                <h2 className="mb-4 fw-bold" style={{fontSize: "2rem"}}>📚 Categories</h2>
+                <div className="row g-4 justify-content-center">
+                    {category.map((c, idx) => (
+                        <div className="col-12 col-md-6 col-lg-4 d-flex" key={idx}>
+                            <div className="card h-100 shadow-lg border-0 rounded-4 w-100 d-flex flex-column align-items-center text-center">
+                                <img src={c.image} className="card-img-top rounded-top-4" alt={c.title} style={{height: "180px", objectFit: "cover"}} />
+                                <div className="card-body d-flex flex-column px-3 pt-3">
+                                    <h5 className="card-title fw-bold mb-2" style={{fontSize: "1.15rem"}}>
+                                        <Link to={`/category/${c.slug}/`} className="btn-link text-reset stretched-link fw-bold text-decoration-none">
+                                            {c.title}
+                                        </Link>
+                                    </h5>
+                                    <small className="text-muted mb-2">{c.post_count} Articles</small>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Popular Articles */}
+            <section className="container-fluid mb-5">
+                <h2 className="mb-4 fw-bold" style={{fontSize: "2rem"}}>🕒 Popular Articles</h2>
+                <div className="row g-4 justify-content-center">
+                    {popularPosts.slice(0, 8).map((p, idx) => (
+                        <div className="col-12 col-md-6 col-lg-4 d-flex" key={idx}>
+                            <div className="card h-100 shadow-lg border-0 rounded-4 w-100 d-flex flex-column">
+                                <img src={p.image} className="card-img-top rounded-top-4" alt={p.title} style={{height: "180px", objectFit: "cover"}} />
+                                <div className="card-body px-3 pt-3 d-flex flex-column">
+                                    <h5 className="card-title fw-bold mb-2" style={{fontSize: "1.15rem"}}>
+                                        <Link to={`/${p.slug}`} className="btn-link text-reset stretched-link fw-bold text-decoration-none">
+                                            {p.title?.slice(0, 32) + "..."}
+                                        </Link>
+                                    </h5>
+                                    <div className="d-flex align-items-center gap-2 mb-2">
+                                        <span><i className="fas fa-user"></i></span>
+                                        <span>{p.profile?.full_name}</span>
+                                    </div>
+                                    <div className="d-flex align-items-center gap-2 mb-2">
+                                        <span><i className="fas fa-calendar"></i></span>
+                                        <span>{moment(p.date).format("DD MMM, YYYY")}</span>
+                                    </div>
+                                    <div className="d-flex align-items-center gap-2 mb-3">
+                                        <span><i className="fas fa-eye"></i></span>
+                                        <span>{p.view} Views</span>
+                                    </div>
+                                    <Link to={`/${p.slug}`} className="btn btn-gradient mt-auto rounded-pill fw-bold">Read More</Link>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </section>
 

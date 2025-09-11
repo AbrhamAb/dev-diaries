@@ -31,12 +31,134 @@
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
+} */
+
+body {
+  background: #f8fafc;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+.bg-gradient {
+    background: linear-gradient(90deg, #6366f1 0%, #22d3ee 100%);
+    color: #fff;
 }
 
 .card {
-  padding: 2em;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px rgba(44,62,80,0.10);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
-.read-the-docs {
-  color: #888;
-} */
+.card:hover {
+  box-shadow: 0 8px 32px rgba(44,62,80,0.18);
+  transform: translateY(-4px) scale(1.02);
+}
+
+.card-img-top {
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  object-fit: cover;
+}
+
+.rounded-4 {
+    border-radius: 1.5rem !important;
+}
+
+.btn-gradient {
+  background: linear-gradient(90deg, #6366f1 0%, #22d3ee 100%);
+  color: #fff;
+  border: none;
+  border-radius: 2rem;
+  font-weight: 600;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(90deg, #22d3ee 0%, #6366f1 100%);
+    color: #fff;
+}
+
+.pagination {
+  justify-content: center;
+}
+
+.page-link {
+    border-radius: 0.75rem !important;
+    margin: 0 2px;
+    color: #6366f1;
+    font-weight: 500;
+    border: none;
+    background: #f3f4f6;
+    transition: background 0.2s, color 0.2s;
+}
+
+.page-item.active .page-link,
+.page-link:hover {
+    background: #6366f1;
+    color: #fff;
+}
+
+h1, h2, h5, h6 {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #222;
+}
+
+.card-body {
+    background: #fff;
+}
+
+.btn-link {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.btn-link:hover {
+    color: #6366f1;
+    text-decoration: underline;
+}
+
+.list-unstyled {
+    margin-bottom: 0;
+}
+
+@media (max-width: 991px) {
+    .card-img-top {
+        height: 160px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-img-top {
+        height: 120px !important;
+    }
+    .card-title {
+        font-size: 1rem !important;
+    }
+    .pagination {
+        font-size: 0.95rem;
+    }
+    .container {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}
+
+@media (max-width: 768px) {
+  .card-img-top { height: 180px !important; }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    background: #e5e7eb;
+}
+::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 4px;
+}

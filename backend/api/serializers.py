@@ -144,20 +144,17 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True)
-    
+
     class Meta:
         model = api_models.Post
         fields = "__all__"
 
-    def __init__(self, *args, **kwargs):
-        super(PostSerializer, self).__init__(*args, **kwargs)
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
         request = self.context.get('request')
-        if request and request.method == 'POST':
-            self.Meta.depth = 0
-        else:
-            self.Meta.depth = 3
-
-
+        if instance.image and request:
+            response['image'] = request.build_absolute_uri(instance.image.url)
+        return response
 
 class BookmarkSerializer(serializers.ModelSerializer):
     

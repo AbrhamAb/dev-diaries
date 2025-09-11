@@ -20,6 +20,7 @@ import Profile from "./views/dashboard/Profile";
 import MainWrapper from "./layouts/MainWrapper";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import SearchResults from "./views/core/SearchResults";
 
 function App() {
     return (
@@ -30,10 +31,11 @@ function App() {
                     <Route path="/:slug/" element={<Detail />} />
                     <Route path="/category/:slug/" element={<Category />} />
                     <Route path="/search/" element={<Search />} />
+                    <Route path="/search/:query" element={<SearchResults />} />
 
                     {/* Authentication */}
                     <Route path="/register/" element={<Register />} />
-                    <Route path="/login/" element={<Login />} />
+                    <Route path="/login/" element={<Login />} />cd 
                     <Route path="/logout/" element={<Logout />} />
                     <Route path="/forgot-password/" element={<ForgotPassword />} />
                     <Route path="/create-password/" element={<CreatePassword />} />

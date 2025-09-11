@@ -12,7 +12,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework import generics
+from rest_framework import generics, filters
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -498,3 +498,13 @@ def post_list(request):
         for post in posts
     ]
     return Response(data)
+
+from rest_framework import generics, filters
+from .models import Post
+from .serializers import PostSerializer
+
+class PostListView(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'description']

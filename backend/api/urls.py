@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from api import views as api_views
-from .views import NewsletterSubscribeView, category_list, post_list
+from .views import NewsletterSubscribeView, category_list, post_list, PostListView
 
 urlpatterns = [
     # Userauths API Endpoints
@@ -38,5 +38,5 @@ urlpatterns = [
     path('categories/', category_list, name='category-list'),
 
     # Post List
-    path('posts/', post_list, name='post-list'),
+    path('posts/', PostListView.as_view(), name='post-list'),
 ]
